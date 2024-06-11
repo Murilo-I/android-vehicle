@@ -1,27 +1,27 @@
 const db = require('./db');
 
-const Veiculo = db.sequelize.define('veiculo', {
-    id_veiculo: {
+const Vehicle = db.sequelize.define('vehicle', {
+    vehicle_id: {
         type: db.Sequelize.INTEGER,
         autoIncrement: true,
         allowNull: false,
         primaryKey: true
     },
-    placa: {
+    plate: {
         type: db.Sequelize.TEXT
     },
-    ano: {
+    year: {
         type: db.Sequelize.INTEGER
     },
-    mensalidade: {
+    rent: {
         type: db.Sequelize.DECIMAL(10, 2)
     },
-    fk_proprietario: {
+    fk_owner: {
         type: db.Sequelize.INTEGER,
-        references: { model: 'Proprietario', key: 'id_proprietario' },
+        references: { model: 'Owner', key: 'owner_id' },
         onDelete: 'CASCADE',
         allowNull: false,
     }
 }, { freezeTableName: true });
 
-module.exports = Veiculo;
+module.exports = Vehicle;

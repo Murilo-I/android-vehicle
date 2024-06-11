@@ -25,7 +25,7 @@ import cz.msebera.android.httpclient.entity.ContentType;
 import cz.msebera.android.httpclient.entity.StringEntity;
 
 public class MainActivity extends AppCompatActivity {
-    private static final String URL = "http://localhost:8081/proprietario";
+    static final String URL = "http://192.168.56.1:8081/owner/";
 
     EditText edtNome, edtCpf;
     Button btnCad, btnList;
@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
 
             if (edtNome.getText().toString().isEmpty() || edtCpf.getText().toString()
                     .isEmpty()) {
-                Toast.makeText(MainActivity.this, "Existes campos em brancos !",
+                Toast.makeText(MainActivity.this, "Existem campos em branco!",
                         Toast.LENGTH_SHORT).show();
             } else {
                 Owner owner = new Owner();
@@ -96,8 +96,9 @@ public class MainActivity extends AppCompatActivity {
                     public void onFailure(int statusCode, Header[] headers, byte[] responseBody,
                                           Throwable error) {
                         Toast.makeText(MainActivity.this,
-                                "Erro ao cadstrar proprietário: " +
-                                        error.getMessage(), Toast.LENGTH_SHORT).show();
+                                        "Erro ao cadastrar proprietário: " +
+                                                error.getMessage(), Toast.LENGTH_SHORT)
+                                .show();
                     }
                 });
     }

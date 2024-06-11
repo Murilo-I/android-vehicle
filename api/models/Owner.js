@@ -1,7 +1,7 @@
 const db = require('./db');
 
-const Proprietario = db.sequelize.define('proprietario', {
-    id_proprietario: {
+const Owner = db.sequelize.define('owner', {
+    owner_id: {
         type: db.Sequelize.INTEGER,
         autoIncrement: true,
         allowNull: false,
@@ -15,4 +15,4 @@ const Proprietario = db.sequelize.define('proprietario', {
     }
 }, { freezeTableName: true });
 
-module.exports = Proprietario;
+module.exports = Owner;

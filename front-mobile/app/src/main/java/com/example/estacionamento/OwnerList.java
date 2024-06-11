@@ -1,5 +1,7 @@
 package com.example.estacionamento;
 
+import static com.example.estacionamento.MainActivity.URL;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -42,20 +44,19 @@ public class OwnerList extends AppCompatActivity {
         context = OwnerList.this;
         owners = findViewById(R.id.ownersList);
         client = new AsyncHttpClient();
-        carregaProprietarios();
+        loadOwner();
 
     }
 
-    public void carregaProprietarios() {
-        String url = "http://192.168.1.94:8081/proprietario";
-        client.get(url, new AsyncHttpResponseHandler() {
+    public void loadOwner() {
+        client.get(URL, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, byte[] responseBody) {
                 if (statusCode == 200) {
-                    listarTodosProprietarios(new String(responseBody));
+                    listAll(new String(responseBody));
                 } else {
                     Toast.makeText(OwnerList.this,
-                            "Falha ao carregar proprietários. Código de status:" + statusCode,
+                            "Falha ao carregar proprietários. Status:" + statusCode,
                             Toast.LENGTH_SHORT).show();
                 }
             }
@@ -72,15 +73,14 @@ public class OwnerList extends AppCompatActivity {
         });
     }
 
-    //Fora do OnCreate
-    public void listarTodosProprietarios(String resposta) {
+    public void listAll(String response) {
         final ArrayList<Owner> list = new ArrayList<>();
         try {
-            JSONArray jsonArray = new JSONArray(resposta);
+            JSONArray jsonArray = new JSONArray(response);
             for (int i = 0; i < jsonArray.length(); i++) {
                 Owner p = new Owner();
 
-                p.setId(jsonArray.getJSONObject(i).getInt("id_proprietario"));
+                p.setId(jsonArray.getJSONObject(i).getInt("owner_id"));
 
                 p.setNome(jsonArray.getJSONObject(i).getString("nome"));
 
@@ -98,7 +98,7 @@ public class OwnerList extends AppCompatActivity {
 
         owners.setOnItemLongClickListener((adapterView, view, i, l) -> {
             Owner p = list.get(i);
-            String url = "http://192.168.1.94:8081/proprietario/" + p.getId();
+            String url = URL + p.getId();
             client.delete(url, new AsyncHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode,
@@ -113,7 +113,7 @@ public class OwnerList extends AppCompatActivity {
                         } catch (InterruptedException e) {
                             Log.e("error", "message: " + e);
                         }
-                        carregaProprietarios();
+                        loadOwner();
                     }
                 }
 
@@ -122,7 +122,6 @@ public class OwnerList extends AppCompatActivity {
                                       cz.msebera.android.httpclient.Header[] headers,
                                       byte[] responseBody,
                                       Throwable error) {
-                    // Trate os erros adequadamente
                     Toast.makeText(OwnerList.this,
                             "Erro ao excluir proprietário: " + error.getMessage(),
                             Toast.LENGTH_SHORT).show();
@@ -132,10 +131,10 @@ public class OwnerList extends AppCompatActivity {
         });
 
         owners.setOnItemClickListener((adapterView, view, i, l) -> {
-            final Owner p = list.get(i);
-            String b = "id_proprietario: " + p.getId() + "\n" +
-                    "nome: " + p.getNome() + "\n" +
-                    "cpf: " + p.getCpf() + "\n";
+            final Owner owner = list.get(i);
+            String b = "owner_id: " + owner.getId() + "\n" +
+                    "nome: " + owner.getNome() + "\n" +
+                    "cpf: " + owner.getCpf() + "\n";
             AlertDialog.Builder a = new AlertDialog.Builder(OwnerList.this);
             a.setCancelable(true);
             a.setTitle("Detalhes do proprietário");
@@ -143,11 +142,10 @@ public class OwnerList extends AppCompatActivity {
             a.setIcon(R.drawable.ic_launcher_background);
             a.setNegativeButton("Editar", (dialogInterface, i1) -> {
                 Intent i2 = new Intent(OwnerList.this, Alternate.class);
-                i2.putExtra("proprietario", p);
+                i2.putExtra("owner", owner);
                 startActivity(i2);
             });
             a.show();
         });
     }
-
 }

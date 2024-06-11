@@ -1,41 +1,40 @@
 const express = require('express');
 const router = express.Router();
-const Proprietario = require('../models/Proprietario');
+const Owner = require('../models/Owner');
 
 router.get('/', async (req, res) => {
-    const proprietarios = await Proprietario.findAll();
-    res.status(200).json(proprietarios);
+    const owners = await Owner.findAll();
+    res.status(200).json(owners);
 });
 
 router.post('/', async (req, res) => {
     const { nome } = req.body;
     const { cpf } = req.body;
-    const newEdit = await Proprietario.create({ nome, cpf })
+    const newEdit = await Owner.create({ nome, cpf });
     res.status(200).json({ message: 'Cadastrado com sucesso' });
 });
 
 router.get('/:id', async (req, res) => {
-    //const id = req.params;
-    const proprietario = await Proprietario.findByPk(req.params.id);
+    const proprietario = await Owner.findByPk(req.params.id);
     res.status(200).json(proprietario);
 });
 
 router.delete('/:id', async (req, res) => {
-    await Proprietario.destroy({
+    await Owner.destroy({
         where: {
-            id_proprietario: req.params.id,
+            owner_id: req.params.id,
         },
     });
-    res.status(200).json({ message: 'Excluído com sucesso' })
+    res.status(200).json({ message: 'Excluído com sucesso' });
 });
 
 router.put('/:id', async (req, res) => {
     const { nome } = req.body;
     const { cpf } = req.body;
-    await Proprietario.update(
+    await Owner.update(
         { nome, cpf },
         {
-            where: { id_proprietario: req.params.id },
+            where: { owner_id: req.params.id },
         }
     );
     res.status(200).json({ message: 'Atualizado com sucesso' });

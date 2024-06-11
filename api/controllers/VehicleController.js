@@ -1,43 +1,43 @@
 const express = require('express');
 const router = express.Router();
-const Veiculo = require('../models/Veiculo');
+const Vehicle = require('../models/Vehicle');
 
 router.get('/', async (req, res) => {
-    const veiculos = await Veiculo.findAll();
-    res.status(200).json(veiculos);
+    const vehicles = await Vehicle.findAll();
+    res.status(200).json(vehicles);
 });
 
 router.post('/', async (req, res) => {
-    const { placa } = req.body;
-    const { ano } = req.body;
-    const { mensalidade } = req.body;
+    const { plate } = req.body;
+    const { year } = req.body;
+    const { rent } = req.body;
     const { fk_proprietario } = req.body;
-    const newEdit = await Veiculo.create({
-        placa, ano, mensalidade,
+    const newEdit = await Vehicle.create({
+        plate, year, rent,
         fk_proprietario
     })
     res.status(200).json({ message: 'Cadastrado com sucesso' });
 });
 
 router.get('/:id', async (req, res) => {
-    const veiculo = await Veiculo.findByPk(req.params.id);
+    const veiculo = await Vehicle.findByPk(req.params.id);
     res.status(200).json(veiculo);
 });
 
 router.delete('/:id', async (req, res) => {
-    await Veiculo.destroy({
+    await Vehicle.destroy({
         where: { id_veiculo: req.params.id },
     });
-    res.status(200).json({ message: 'Excluído com sucesso' })
+    res.status(200).json({ message: 'Excluído com sucesso' });
 });
 
 router.put('/:id', async (req, res) => {
-    const { placa } = req.body;
-    const { ano } = req.body;
-    const { mensalidade } = req.body;
+    const { plate } = req.body;
+    const { year } = req.body;
+    const { rent } = req.body;
     const { fk_proprietario } = req.body;
-    await Veiculo.update(
-        { placa, ano, mensalidade, fk_proprietario },
+    await Vehicle.update(
+        { plate, year, rent, fk_proprietario },
         {
             where: { id_veiculo: req.params.id },
         }

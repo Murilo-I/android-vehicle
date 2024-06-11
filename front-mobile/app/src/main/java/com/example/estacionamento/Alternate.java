@@ -1,5 +1,7 @@
 package com.example.estacionamento;
 
+import static com.example.estacionamento.MainActivity.URL;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,7 +28,7 @@ import cz.msebera.android.httpclient.entity.StringEntity;
 
 public class Alternate extends AppCompatActivity {
 
-    EditText edtCodigo, edtNome, edtCpf;
+    EditText edtId, edtNome, edtCpf;
     Button btnAlternate;
     AsyncHttpClient client;
 
@@ -35,50 +37,53 @@ public class Alternate extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_alterar);
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        Owner owner;
+
         Intent intent = getIntent();
-        owner = (Owner) intent.getSerializableExtra("proprietario");
-        edtCodigo = findViewById(R.id.edtId);
+        edtId = findViewById(R.id.edtId);
         edtNome = findViewById(R.id.edtNome2);
         edtCpf = findViewById(R.id.edtCpf2);
         btnAlternate = findViewById(R.id.button);
         client = new AsyncHttpClient();
+
+        Owner owner = (Owner) intent.getSerializableExtra("owner");
         assert owner != null;
-        edtCodigo.setText(String.valueOf(owner.getId()));
+
+        edtId.setText(String.valueOf(owner.getId()));
         edtNome.setText(String.valueOf(owner.getNome()));
         edtCpf.setText(String.valueOf(owner.getCpf()));
+
         btnAlternate.setOnClickListener(view -> {
             if (edtNome.getText().toString().isEmpty() ||
                     edtCpf.getText().toString().isEmpty()) {
-                Toast.makeText(Alternate.this, "Existes campos em brancos!",
+                Toast.makeText(Alternate.this, "Existem campos em branco!",
                         Toast.LENGTH_SHORT).show();
             } else {
-                Owner obj = new Owner();
-
-                obj.setId(Integer.parseInt(edtCodigo.getText().toString()));
-                obj.setNome(edtNome.getText().toString());
-                obj.setCpf(edtCpf.getText().toString());
-                alterarProprietario(obj);
+                Owner newOwner = new Owner();
+                newOwner.setId(Integer.parseInt(edtId.getText().toString()));
+                newOwner.setNome(edtNome.getText().toString());
+                newOwner.setCpf(edtCpf.getText().toString());
+                update(newOwner);
             }
         });
     }
 
-    public void alterarProprietario(Owner obj) {
+    public void update(Owner owner) {
         String url;
-        url = "http://192.168.1.94:8081/proprietario/" + obj.getId();
-        JSONObject parametros = new JSONObject();
+        url = URL + owner.getId();
+        JSONObject params = new JSONObject();
         try {
-            parametros.put("nome", obj.getNome());
-            parametros.put("cpf", obj.getCpf());
+            params.put("nome", owner.getNome());
+            params.put("cpf", owner.getCpf());
         } catch (JSONException e) {
             Log.e("error", "message: " + e);
         }
-        StringEntity entity = new StringEntity(parametros.toString(), ContentType.APPLICATION_JSON);
+        StringEntity entity = new StringEntity(params.toString(), ContentType.APPLICATION_JSON);
         client.put(Alternate.this, url, entity, "application/json",
                 new AsyncHttpResponseHandler() {
                     @Override
